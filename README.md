@@ -23,6 +23,7 @@ SparrowRide is a modular Java console application simulating a ride management s
 
 ## 🚀 Features
 
+- User Login/Signup and basic Authentication
 - JDBC-based PostgreSQL database integration  
 - Ride-sharing backend logic (user, ride, booking)  
 - Console-based interaction  
@@ -64,9 +65,8 @@ java -cp "bin:lib/postgresql-42.7.7.jar" Sparrow
 ## 🛠️ Requirements
 
 - Java 8 or above  
-- PostgreSQL installed and running  
 - PostgreSQL JDBC driver (`lib/postgresql-42.7.7.jar`)  
-- Terminal or IDE (IntelliJ, Eclipse, etc.)
+- Terminal or IDE (IntelliJ, Eclipse, VS Code etc.)
 
 ---
 
@@ -90,15 +90,6 @@ java -cp "bin:lib/postgresql-42.7.7.jar" Sparrow
 ### `util/`
 - Handles database connection setup and configuration
 - E.g., `DBUtil.java`, `Config.java`
-
----
-
-## 🧩 Extend the Project
-
-- Add login/signup and user profiles  
-- Admin dashboard for ride and user management  
-- GUI version using JavaFX or Swing  
-- REST API integration for frontend communication
 
 ---
 
