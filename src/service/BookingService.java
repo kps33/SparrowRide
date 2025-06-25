@@ -10,11 +10,9 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 public class BookingService {
-    private static final String ROUTE_DB_URL = "jdbc:mysql://localhost:3306/route";
-    private static final String SEATS_DB_URL = "jdbc:mysql://localhost:3306/seats";
-    private static final String USER_DB_URL = "jdbc:mysql://localhost:3306/UserData";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "ZeEl@51271895@";
+    private static final String ROUTE_DB_URL = "jdbc:postgresql://ep-lucky-credit-a8tv1gm8-pooler.eastus2.azure.neon.tech:5432/route?user=seats_owner&password=npg_Nso9FKZyR7ST&sslmode=require&channel_binding=require";
+    private static final String SEATS_DB_URL = "jdbc:postgresql://ep-lucky-credit-a8tv1gm8-pooler.eastus2.azure.neon.tech:5432/seats?user=seats_owner&password=npg_Nso9FKZyR7ST&sslmode=require&channel_binding=require";
+    private static final String USER_DB_URL = "jdbc:postgresql://ep-lucky-credit-a8tv1gm8-pooler.eastus2.azure.neon.tech:5432/userdata?user=seats_owner&password=npg_Nso9FKZyR7ST&sslmode=require&channel_binding=require";
     
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
@@ -99,7 +97,7 @@ public class BookingService {
         printLoadingMessage("Searching for buses...");
         List<Integer> availableBuses = new ArrayList<>();
         
-        try (Connection conn = DriverManager.getConnection(ROUTE_DB_URL, DB_USER, DB_PASS)) {
+        try (Connection conn = DriverManager.getConnection(ROUTE_DB_URL)) {
             for (int i = 1; i <= 20; i++) {
                 String firstQuery = "SELECT * FROM route" + i + " ORDER BY distance ASC LIMIT 1";
                 String lastQuery = "SELECT * FROM route" + i + " ORDER BY distance DESC LIMIT 1";
@@ -181,7 +179,7 @@ public class BookingService {
     }
     
     private void showBusTypes(int busNo, int distance, int disBefore, int selectedDate) {
-        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL, DB_USER, DB_PASS)) {
+        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL)) {
             String sql = "SELECT * FROM listOfSeats" + busNo + " WHERE date = ?";
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setInt(1, selectedDate);
@@ -299,7 +297,7 @@ public class BookingService {
     public int getDistance(String source, String destination) {
         for (int i = 1; i <= 20; i++) {
             String sql = "SELECT * FROM route" + i + " WHERE name = ? OR name = ?";
-            try (Connection conn = DriverManager.getConnection(ROUTE_DB_URL, DB_USER, DB_PASS);
+            try (Connection conn = DriverManager.getConnection(ROUTE_DB_URL);
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 
                 pstmt.setString(1, source);
@@ -359,7 +357,7 @@ public class BookingService {
 
         String sql = "UPDATE listOfSeats" + busNo + " SET " + type + " = " + type + " - ? WHERE date = ?";
         
-        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL, DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, noOfSeats);
@@ -382,7 +380,7 @@ public class BookingService {
     private void insertBookingDetails(User user, int busNo, String busType, int noOfSeats, int date) {
         String sql = "INSERT INTO BookingData (idx, UserId, Source, Destination, bustype, NoOfSeats, date, busNO) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             int nextIdx = getNextIdx(conn);
@@ -437,7 +435,7 @@ public class BookingService {
         String type = getBusTypeString(busType);
         String sql = "UPDATE listOfSeats" + busNo + " SET " + type + " = " + type + " + ? WHERE date = ?";
         
-        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL, DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, noOfSeats);
@@ -461,7 +459,7 @@ public class BookingService {
     private boolean verifyTicketOwnership(int busNo, String busType, int noOfSeats, int date, String userId) {
         String sql = "SELECT * FROM BookingData WHERE busNO = ? AND bustype = ? AND NoOfSeats = ? AND date = ? AND UserId = ?";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, busNo);
@@ -483,7 +481,7 @@ public class BookingService {
     public boolean deleteBooking(int bookingId, String userId) {
         String sql = "DELETE FROM BookingData WHERE idx = ? AND UserId = ?";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, bookingId);
@@ -513,7 +511,7 @@ public class BookingService {
         String type = getBusTypeString(busType);
         String sql = "SELECT * FROM listOfSeats" + busNo + " WHERE date = ?";
         
-        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL, DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection(SEATS_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setInt(1, date);
@@ -592,7 +590,7 @@ public class BookingService {
     public void resetSeats() {
         for (int busNo = 1; busNo <= 20; busNo++) {
             String sql = "UPDATE listOfSeats" + busNo + " SET Express=52, Luxury=41, NonAC_Sleeper=30, AC_Sleeper=30 WHERE date = ?";
-            try (Connection conn = DriverManager.getConnection(SEATS_DB_URL, DB_USER, DB_PASS);
+            try (Connection conn = DriverManager.getConnection(SEATS_DB_URL);
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 
                 for (int date = 1; date <= 31; date++) {

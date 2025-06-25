@@ -5,7 +5,7 @@ import util.DatabaseUtil;
 import java.sql.*;
 
 public class UserService {
-    private static final String USER_DB_URL = "jdbc:mysql://localhost:3306/UserData";
+    private static final String USER_DB_URL = "jdbc:postgresql://ep-lucky-credit-a8tv1gm8-pooler.eastus2.azure.neon.tech:5432/userdata?user=seats_owner&password=npg_Nso9FKZyR7ST&sslmode=require&channel_binding=require";
     
     public boolean registerUser(User user) {
         if (user.getName() == null || user.getName().trim().isEmpty()) {
@@ -30,7 +30,7 @@ public class UserService {
 
         String sql = "INSERT INTO dataTable (name, mobileNumber, userId, password) VALUES (?, ?, ?, ?)";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, "root", "ZeEl@51271895@");
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, user.getName());
@@ -59,7 +59,7 @@ public class UserService {
 
         String sql = "SELECT * FROM dataTable WHERE userId = ? AND password = ?";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, "root", "ZeEl@51271895@");
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, userId);
@@ -84,7 +84,7 @@ public class UserService {
     public boolean isUserIdExists(String userId) {
         String sql = "SELECT userId FROM dataTable WHERE userId = ?";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, "root", "ZeEl@51271895@");
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, userId);
@@ -99,7 +99,7 @@ public class UserService {
     public String getMobileNumber(String userId) {
         String sql = "SELECT mobileNumber FROM dataTable WHERE userId = ?";
         
-        try (Connection conn = DriverManager.getConnection(USER_DB_URL, "root", "ZeEl@51271895@");
+        try (Connection conn = DriverManager.getConnection(USER_DB_URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, userId);

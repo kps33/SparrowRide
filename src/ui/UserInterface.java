@@ -19,8 +19,6 @@ public class UserInterface {
     private final BookingService bookingService;
     private final Scanner scanner;
     private User currentUser;
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "ZeEl@51271895@";
     
     // ANSI Color Constants
     private static final String ANSI_RESET = "\u001B[0m";
@@ -451,7 +449,7 @@ public class UserInterface {
         // Get booking details and cancel
         int bookingId = Integer.parseInt(ticketNumber.substring(3)) - 13830000;
         
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/UserData", DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://ep-lucky-credit-a8tv1gm8-pooler.eastus2.azure.neon.tech:5432/userdata?user=seats_owner&password=npg_Nso9FKZyR7ST&sslmode=require&channel_binding=require");
              PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM BookingData WHERE idx = ? AND UserId = ?")) {
             
             pstmt.setInt(1, bookingId);
@@ -488,7 +486,7 @@ public class UserInterface {
         System.out.println(ANSI_CYAN + ANSI_BOLD + "+--------------------------------------+" + ANSI_RESET);
         String sql = "SELECT * FROM BookingData WHERE UserId = ?";
         
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/UserData", DB_USER, DB_PASS);
+        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://ep-lucky-credit-a8tv1gm8-pooler.eastus2.azure.neon.tech:5432/userdata?user=seats_owner&password=npg_Nso9FKZyR7ST&sslmode=require&channel_binding=require");
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, user.getUserId());
